@@ -39,7 +39,7 @@
       "type": "row"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Total cost per model in the selected time range",
       "fieldConfig": {
         "defaults": {
@@ -70,7 +70,7 @@
       "type": "piechart"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Cumulative cost per model over time (5m rate)",
       "fieldConfig": {
         "defaults": {
@@ -106,7 +106,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Table of cost per model with totals",
       "fieldConfig": {
         "defaults": {
@@ -169,7 +169,7 @@
       "type": "row"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Total tokens consumed per model, broken down by token type",
       "fieldConfig": {
         "defaults": {
@@ -209,7 +209,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Cache read vs cache creation tokens per model",
       "fieldConfig": {
         "defaults": {
@@ -249,7 +249,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Total tokens by model — donut shows which model consumes the most tokens",
       "fieldConfig": {
         "defaults": {
@@ -285,7 +285,7 @@
       "type": "row"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Cache hit ratio per model — higher is better. Shows how effectively each model leverages cached context.",
       "fieldConfig": {
         "defaults": {
@@ -322,7 +322,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Cost per 1K output tokens by model — lower is more cost-efficient",
       "fieldConfig": {
         "defaults": {
@@ -358,7 +358,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Output tokens generated per dollar spent, by model — higher is more efficient",
       "fieldConfig": {
         "defaults": {
@@ -393,7 +393,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Input-to-output ratio per model — how many input tokens per output token. Lower may indicate more efficient prompting.",
       "fieldConfig": {
         "defaults": {

@@ -33,24 +33,12 @@
       },
       "id": 100,
       "options": {
-        "content": "<div style=\"font-size:14px;line-height:1.6\"><h3 style=\"margin:0 0 8px\">Claude Code \u2014 Live Activity</h3><p style=\"margin:0;color:#999\">Real-time metrics for Claude Code sessions. Cost, token usage, cache efficiency, active time, code changes, and tool decisions.</p><p style=\"margin:4px 0 0;color:#666;font-size:12px\">\ud83d\udca1 Use the time picker to adjust the window. Stat panels show totals for the selected range.</p></div>",
-        "contentPartials": [],
-        "defaultContent": "",
-        "editor": {
-          "format": "auto",
-          "language": "html"
-        },
-        "everyRow": false,
-        "externalStyles": [],
-        "helpers": "",
-        "renderMode": "everyRow",
-        "status": "none",
-        "styles": "",
-        "wrap": true
+        "mode": "html",
+        "content": "<div style=\"font-size:14px;line-height:1.6\"><h3 style=\"margin:0 0 8px\">Claude Code \u2014 Live Activity</h3><p style=\"margin:0;color:#999\">Real-time metrics for Claude Code sessions. Cost, token usage, cache efficiency, active time, code changes, and tool decisions.</p><p style=\"margin:4px 0 0;color:#666;font-size:12px\">\ud83d\udca1 Use the time picker to adjust the window. Stat panels show totals for the selected range.</p></div>"
       },
       "title": "",
       "transparent": true,
-      "type": "marcusolsson-dynamictext-panel"
+      "type": "text"
     },
     {
       "collapsed": false,
@@ -66,7 +54,7 @@
       "type": "row"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Total USD spent across all models in the selected time range",
       "fieldConfig": {
         "defaults": {
@@ -114,7 +102,7 @@
       "type": "stat"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Number of Claude Code sessions started",
       "fieldConfig": {
         "defaults": {
@@ -161,7 +149,7 @@
       "type": "stat"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Sum of all token types (input, output, cache read, cache creation)",
       "fieldConfig": {
         "defaults": {
@@ -208,7 +196,7 @@
       "type": "stat"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Total seconds Claude Code was actively processing",
       "fieldConfig": {
         "defaults": {
@@ -255,7 +243,7 @@
       "type": "stat"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Total lines of code added by Claude Code",
       "fieldConfig": {
         "defaults": {
@@ -302,7 +290,7 @@
       "type": "stat"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Total lines of code removed by Claude Code",
       "fieldConfig": {
         "defaults": {
@@ -362,7 +350,7 @@
       "type": "row"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "5-minute stacked cost showing which model contributes to spend over time.",
       "fieldConfig": {
         "defaults": {
@@ -412,7 +400,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "5-minute token consumption by type (input, output, cache read, cache creation).",
       "fieldConfig": {
         "defaults": {
@@ -473,7 +461,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Pie chart showing proportional cost split between models.",
       "fieldConfig": {
         "defaults": {
@@ -515,7 +503,7 @@
       "type": "piechart"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Proportional split of all token types across the range.",
       "fieldConfig": {
         "defaults": {
@@ -556,7 +544,7 @@
       "type": "piechart"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Percentage of input tokens served from cache. Higher is better. Red <50%, Yellow 50-80%, Green >80%.",
       "fieldConfig": {
         "defaults": {
@@ -633,7 +621,7 @@
       "type": "row"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Bar chart showing lines added (green, positive) and removed (red, negative) per 5-minute window.",
       "fieldConfig": {
         "defaults": {
@@ -718,7 +706,7 @@
       "type": "timeseries"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Lines added minus removed. Green = net positive, Red = net negative.",
       "fieldConfig": {
         "defaults": {
@@ -780,7 +768,7 @@
       "type": "row"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Top 10 tools by total invocation count in the selected range.",
       "fieldConfig": {
         "defaults": {
@@ -816,7 +804,7 @@
       "type": "bargauge"
     },
     {
-      "datasource": null,
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "description": "Proportional breakdown of accept/reject/error decisions.",
       "fieldConfig": {
         "defaults": {
