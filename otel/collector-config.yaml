@@ -1,0 +1,38 @@
+# OTEL Collector config (Docker variant).
+# Binds 0.0.0.0 so the host (Claude Code) and sibling containers can reach it.
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  resource:
+    attributes:
+      - key: environment
+        value: "local"
+        action: upsert
+
+exporters:
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+
+  # Loki native OTLP ingestion (Loki >= 3.0). Service-name DNS on the compose network.
+  otlphttp/loki:
+    endpoint: "http://loki:3100/otlp"
+
+  debug:
+    verbosity: normal
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [resource]
+      exporters: [prometheus, debug]
+    logs:
+      receivers: [otlp]
+      processors: [resource]
+      exporters: [otlphttp/loki]

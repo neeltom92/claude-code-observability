@@ -1,0 +1,92 @@
+# Claude Code local observability stack — Docker Compose
+#
+# Architecture:
+#   Claude Code (host) --OTLP/HTTP--> localhost:4318 --> otel-collector (container)
+#   otel-collector --prometheus exporter--> :8889  (scraped by prometheus)
+#   otel-collector --OTLP logs--> http://loki:3100/otlp
+#   grafana --query--> prometheus:9090  and  loki:3100
+#
+# Containers talk to each other over the compose network by service name.
+# Host ports are published so Claude Code (running on the host) and your
+# browser can reach the stack at localhost.
+#
+# Image tags are pinned to known-good versions. For stricter supply-chain
+# hardening, replace each tag with its multi-arch digest (image@sha256:...).
+
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.148.0
+    container_name: ccobs-otel-collector
+    restart: unless-stopped
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    volumes:
+      - ./otel/collector-config.yaml:/etc/otelcol-contrib/config.yaml:ro
+    ports:
+      - "127.0.0.1:4317:4317"   # OTLP gRPC
+      - "127.0.0.1:4318:4318"   # OTLP HTTP (Claude Code sends here)
+      - "127.0.0.1:8889:8889"   # Prometheus exporter (debug/inspection)
+    networks: [ccobs]
+
+  prometheus:
+    image: prom/prometheus:v3.10.0
+    container_name: ccobs-prometheus
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=30d"
+      - "--web.enable-otlp-receiver"   # fallback OTLP ingest path
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    depends_on: [otel-collector]
+    networks: [ccobs]
+
+  loki:
+    image: grafana/loki:3.6.0
+    container_name: ccobs-loki
+    restart: unless-stopped
+    # Loki runs as uid 10001, but the fresh `loki-data` named volume is created
+    # root-owned, so it can't `mkdir /loki/chunks`. Run as root for this
+    # loopback-only local stack so it can write the volume.
+    user: "0"
+    command: ["-config.file=/etc/loki/loki-config.yaml"]
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/loki-config.yaml:ro
+      - loki-data:/loki
+    ports:
+      - "127.0.0.1:3100:3100"
+    networks: [ccobs]
+
+  grafana:
+    image: grafana/grafana:12.4.0
+    container_name: ccobs-grafana
+    restart: unless-stopped
+    environment:
+      # Anonymous access (Viewer) so no login is needed to view dashboards.
+      # Log in as admin/admin to edit.
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Viewer"
+      GF_SECURITY_ADMIN_USER: "admin"
+      GF_SECURITY_ADMIN_PASSWORD: "admin"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on: [prometheus, loki]
+    networks: [ccobs]
+
+networks:
+  ccobs:
+    name: ccobs
+
+volumes:
+  prometheus-data:
+  loki-data:
+  grafana-data:

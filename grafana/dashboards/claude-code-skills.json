@@ -1,0 +1,327 @@
+{
+  "uid": "claude-code-skills",
+  "title": "Claude Code — Skills Usage",
+  "tags": ["claude-code", "skills"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "refresh": "30s",
+  "time": { "from": "now-24h", "to": "now" },
+  "editable": true,
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Distinct Skills Used",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 5, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "refId": "A",
+          "instant": true,
+          "expr": "count(group by (skill_name) (last_over_time(claude_code_token_usage_tokens_total{skill_name!=\"\"}[$__range])))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "fixed", "fixedColor": "purple" }, "unit": "short" },
+        "overrides": []
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "none" }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Skill Invocations (events)",
+      "datasource": { "type": "loki", "uid": "loki" },
+      "gridPos": { "h": 5, "w": 5, "x": 5, "y": 0 },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "instant",
+          "expr": "sum(count_over_time({service_name=\"claude-code\"} | event_name=\"skill_activated\" [$__range]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "fixed", "fixedColor": "orange" }, "unit": "short", "noValue": "0" },
+        "overrides": []
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "none" }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Tokens Attributed to Skills",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 7, "x": 10, "y": 0 },
+      "targets": [
+        {
+          "refId": "A",
+          "instant": true,
+          "expr": "sum(increase(claude_code_token_usage_tokens_total{skill_name!=\"\"}[$__range]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "fixed", "fixedColor": "blue" }, "unit": "short", "noValue": "0" },
+        "overrides": []
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "none" }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Cost Attributed to Skills",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 7, "x": 17, "y": 0 },
+      "targets": [
+        {
+          "refId": "A",
+          "instant": true,
+          "expr": "sum(increase(claude_code_cost_usage_USD_total{skill_name!=\"\"}[$__range]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "fixed", "fixedColor": "green" }, "unit": "currencyUSD", "decimals": 2, "noValue": "$0" },
+        "overrides": []
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "none" }
+    },
+    {
+      "id": 10,
+      "type": "barchart",
+      "title": "Skill Invocations by Name (Loki events)",
+      "description": "Exact per-activation counts from claude_code.skill_activated events — covers Skill tool, / commands, and proactive activations. Skill names verbatim (no third-party redaction on events).",
+      "datasource": { "type": "loki", "uid": "loki" },
+      "gridPos": { "h": 9, "w": 9, "x": 0, "y": 5 },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "instant",
+          "expr": "sort_desc(sum by (skill_name) (count_over_time({service_name=\"claude-code\"} | event_name=\"skill_activated\" [$__range])))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "unit": "short" },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "showValue": "always",
+        "legend": { "showLegend": false },
+        "tooltip": { "mode": "single" }
+      }
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Skill Invocations Over Time",
+      "datasource": { "type": "loki", "uid": "loki" },
+      "gridPos": { "h": 9, "w": 9, "x": 15, "y": 5 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (skill_name) (count_over_time({service_name=\"claude-code\"} | event_name=\"skill_activated\" [$__auto]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "short",
+          "custom": { "drawStyle": "bars", "fillOpacity": 60, "stacking": { "mode": "normal" } }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } }
+    },
+    {
+      "id": 12,
+      "type": "piechart",
+      "title": "Activations by Trigger",
+      "description": "How skills got activated: user-slash (/ command), claude-proactive (Skill tool), etc.",
+      "datasource": { "type": "loki", "uid": "loki" },
+      "gridPos": { "h": 9, "w": 6, "x": 9, "y": 5 },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "instant",
+          "expr": "sum by (invocation_trigger) (count_over_time({service_name=\"claude-code\"} | event_name=\"skill_activated\" [$__range]))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "unit": "short" },
+        "overrides": []
+      },
+      "options": {
+        "pieType": "donut",
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "tooltip": { "mode": "single" }
+      }
+    },
+    {
+      "id": 20,
+      "type": "piechart",
+      "title": "Tokens by Skill",
+      "description": "Token usage attributed while a skill was active (metrics path). Note: skills from third-party marketplaces (incl. this Life360 marketplace) are redacted to 'third-party' by Claude Code on metrics — use the event panels above for verbatim names.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 9, "w": 8, "x": 0, "y": 14 },
+      "targets": [
+        {
+          "refId": "A",
+          "instant": true,
+          "expr": "sum by (skill_name) (increase(claude_code_token_usage_tokens_total{skill_name!=\"\"}[$__range]))",
+          "legendFormat": "{{skill_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "unit": "short" },
+        "overrides": []
+      },
+      "options": {
+        "pieType": "donut",
+        "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"], "showLegend": true },
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "tooltip": { "mode": "single" }
+      }
+    },
+    {
+      "id": 21,
+      "type": "bargauge",
+      "title": "Cost by Skill (USD)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 9, "w": 8, "x": 8, "y": 14 },
+      "targets": [
+        {
+          "refId": "A",
+          "instant": true,
+          "expr": "sort_desc(sum by (skill_name) (increase(claude_code_cost_usage_USD_total{skill_name!=\"\"}[$__range])))",
+          "legendFormat": "{{skill_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "continuous-GrYlRd" }, "unit": "currencyUSD", "decimals": 3 },
+        "overrides": []
+      },
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "showUnfilled": true
+      }
+    },
+    {
+      "id": 22,
+      "type": "timeseries",
+      "title": "Token Usage by Skill Over Time",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 9, "w": 8, "x": 16, "y": 14 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (skill_name) (increase(claude_code_token_usage_tokens_total{skill_name!=\"\"}[5m]))",
+          "legendFormat": "{{skill_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "short",
+          "custom": { "drawStyle": "line", "fillOpacity": 20, "stacking": { "mode": "normal" } }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } }
+    },
+    {
+      "id": 30,
+      "type": "barchart",
+      "title": "Tool Usage — All Tools (Loki events)",
+      "datasource": { "type": "loki", "uid": "loki" },
+      "gridPos": { "h": 9, "w": 8, "x": 0, "y": 23 },
+      "targets": [
+        {
+          "refId": "A",
+          "queryType": "instant",
+          "expr": "sort_desc(sum by (tool_name) (count_over_time({service_name=\"claude-code\"} | event_name=\"tool_result\" [$__range])))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "unit": "short" },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "showValue": "always",
+        "legend": { "showLegend": false },
+        "tooltip": { "mode": "single" }
+      }
+    },
+    {
+      "id": 31,
+      "type": "piechart",
+      "title": "Tokens by Plugin",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 9, "w": 8, "x": 8, "y": 23 },
+      "targets": [
+        {
+          "refId": "A",
+          "instant": true,
+          "expr": "sum by (plugin_name) (increase(claude_code_token_usage_tokens_total{plugin_name!=\"\"}[$__range]))",
+          "legendFormat": "{{plugin_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "unit": "short" },
+        "overrides": []
+      },
+      "options": {
+        "pieType": "donut",
+        "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"], "showLegend": true },
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "tooltip": { "mode": "single" }
+      }
+    },
+    {
+      "id": 32,
+      "type": "barchart",
+      "title": "Tokens by Subagent Type",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 9, "w": 8, "x": 16, "y": 23 },
+      "targets": [
+        {
+          "refId": "A",
+          "instant": true,
+          "expr": "sort_desc(sum by (agent_name) (increase(claude_code_token_usage_tokens_total{agent_name!=\"\"}[$__range])))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "unit": "short" },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "showValue": "always",
+        "legend": { "showLegend": false },
+        "tooltip": { "mode": "single" }
+      }
+    },
+    {
+      "id": 40,
+      "type": "logs",
+      "title": "Recent Skill Activations (raw events)",
+      "datasource": { "type": "loki", "uid": "loki" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 32 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{service_name=\"claude-code\"} | event_name=\"skill_activated\" | line_format `skill={{.skill_name}} trigger={{.invocation_trigger}} source={{.skill_source}} plugin={{.plugin_name}} session={{.session_id}}`"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false,
+        "enableLogDetails": true,
+        "dedupStrategy": "none"
+      }
+    }
+  ]
+}

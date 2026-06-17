@@ -1,0 +1,3 @@
+# Data volumes are Docker-managed (named volumes), so nothing runtime lands here.
+.DS_Store
+*.log
