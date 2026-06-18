@@ -8,6 +8,20 @@ Built and tested on **macOS (Apple Silicon) + Docker Desktop**.
 
 https://github.com/user-attachments/assets/0cd0e2a5-0f8a-4f41-a313-0322ba55fda9
 
+## Screenshots
+
+**Claude Code** — cost, tokens, sessions, active time, code churn:
+
+![Claude Code dashboard](docs/screenshots/claude-code-dashboard.png)
+
+**Model Usage** — per-model cost, token, and efficiency breakdown:
+
+![Model Usage dashboard](docs/screenshots/model-usage-dashboard.png)
+
+**Skills Usage** — skill/tool invocation events from Loki:
+
+![Skills Usage dashboard](docs/screenshots/skills-usage-dashboard.png)
+
 ## Quickstart
 
 ```bash
