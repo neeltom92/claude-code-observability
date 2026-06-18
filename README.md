@@ -4,6 +4,10 @@ One command spins up a full local observability stack for [Claude Code](https://
 
 Built and tested on **macOS (Apple Silicon) + Docker Desktop**.
 
+## Demo
+
+https://github.com/user-attachments/assets/0cd0e2a5-0f8a-4f41-a313-0322ba55fda9
+
 ## Quickstart
 
 ```bash
