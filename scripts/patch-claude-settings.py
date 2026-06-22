@@ -10,7 +10,9 @@ Usage:
 """
 import json
 import os
+import shutil
 import sys
+from datetime import datetime
 
 SETTINGS = os.path.expanduser("~/.claude/settings.json")
 
@@ -36,6 +38,15 @@ def load():
         return json.load(f)
 
 
+def backup():
+    """Copy existing settings.json to a timestamped .bak before modifying it."""
+    if not os.path.exists(SETTINGS):
+        return
+    dst = SETTINGS + ".bak." + datetime.now().strftime("%Y%m%d-%H%M%S")
+    shutil.copy2(SETTINGS, dst)
+    print("    Backed up settings to " + dst)
+
+
 def save(cfg):
     with open(SETTINGS, "w") as f:
         json.dump(cfg, f, indent=2)
@@ -47,6 +58,7 @@ def patch():
     env = cfg.setdefault("env", {})
     changed = {k: v for k, v in WANTED.items() if env.get(k) != v}
     if changed:
+        backup()
         env.update(WANTED)
         save(cfg)
         print("    Updated OTEL env vars: " + ", ".join(sorted(changed)))
@@ -60,6 +72,8 @@ def revert():
     cfg = load()
     env = cfg.get("env", {})
     removed = [k for k in WANTED if k in env]
+    if removed:
+        backup()
     for k in removed:
         del env[k]
     if not env:

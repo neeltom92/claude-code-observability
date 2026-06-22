@@ -105,7 +105,7 @@ Then restart Claude Code.
 
 - Image tags are pinned to known-good versions in `docker-compose.yml`. For stricter supply-chain hardening, replace each tag with its multi-arch digest (`image@sha256:...`).
 - This repo is self-contained — clone it anywhere and `make up`.
-- `make up` writes OTEL env vars into `~/.claude/settings.json` (no backup is made). Review `scripts/patch-claude-settings.py` first; `make unpatch` reverts them.
+- `make up` writes OTEL env vars into `~/.claude/settings.json`. A timestamped backup (`settings.json.bak.<ts>`) is made before any change. Review `scripts/patch-claude-settings.py` first; `make unpatch` reverts them.
 
 ## Contributing
 
